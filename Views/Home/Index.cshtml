@@ -1,8 +1,88 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<Tarefa>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="row h-100">
+    <div class="col-md-2 pt-4 pt-md-5">
+        <form asp-action="Filtrar" asp-controller="Home" method="post">
+            <div class="mb-3">
+                <label class="form-label">Categoria:</label>
+                <select 
+                    name="filtro" class="form-select" asp-items="@(new SelectList(ViewBag.Categorias, "CategoriaId", "Nome", ViewBag.Filtros.CategoriaId))">
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Data de Vencimento:</label>
+                <select name="filtro" class="form-select" asp-items="@(new SelectList(ViewBag.Vencimento, "Key", "Value", ViewBag.Filtros.Vencimento))">
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Situação:</label>
+                <select name="filtro" class="form-select" asp-items="@(new SelectList(ViewBag.Status, "StatusId", "Nome", ViewBag.Filtros.StatusId))">
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
+
+            <div class="d-flex flex-row flex-wrap align-items-center gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
+                <a asp-action="Index" asp-router-id="" class="btn btn-primary flex-grow-1">Limpar</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-10 pt-3 pt-md-5">
+
+        <form asp-action="MarcarCompleto" method="post" asp-router-id="@ViewBag.Filtros.FiltroString">
+
+                <table class="table table-responsive table-bordered table-striped mt-2 overflow-scroll">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Descrição</th>
+                            <th class="text-center">Categoria</th>
+                            <th class="text-center">Data de Vencimento</th>
+                            <th class="text-center">Status</th>
+                            <th class="w-25"></th>
+                        </tr>
+                    </thead>
+                <tbody>
+                        @foreach (Tarefa tarefa in Model)
+                        {
+                            string atrasado = tarefa.Atrasado ? "bg-warning" : "";
+
+                            <tr>
+                                <td class="@atrasado text-center">@tarefa.Descricao</td>
+                                <td class="@atrasado text-center">@tarefa.Categoria.Nome</td>
+                                <td class="@atrasado text-center">@tarefa.DataVencimento?.ToShortDateString()</td>
+                                <td class="@atrasado text-center">@tarefa.Status.Nome</td>
+                                <td class="@atrasado text-center">
+                                    @if (tarefa.StatusId == "pendente")
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-primary btn-sm"
+                                                name="@nameof(Tarefa.Id)"
+                                                value="@tarefa.Id">
+                                            Completar
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </form>
+
+        <form asp-action="DeletarCompletos" method="post" asp-route-id="@ViewBag.Filtros.FiltroString">
+
+            <a asp-action="Adicionar" asp-controller="Home" class="btn btn-success">Adicionar Tarefa</a>
+
+            <button type="submit" class="btn btn-danger">Deletar Tarefas Finalizadas</button>
+
+        </form>
+
+
+    </div>
 </div>
