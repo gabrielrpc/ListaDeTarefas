@@ -24,7 +24,7 @@ namespace ListaDeTarefas.Context
 
             modelBuilder.Entity<Status>().HasData(
                 new Status { StatusId = "pendente", Nome = "Pendente" },
-                new Status { StatusId = "concluida", Nome = "Concluída" }
+                new Status { StatusId = "concluido", Nome = "Concluído" }
             );
         }
     }
